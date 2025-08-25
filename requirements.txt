@@ -1,0 +1,24 @@
+# Core CrewAI dependencies
+crewai
+crewai-tools
+crewai[all]
+python-dotenv
+chromadb
+# LangChain for LLM integration
+langchain_openai
+langchain_community
+# Data handling
+pandas
+openpyxl
+faiss-cpu
+# Environment management
+python-dotenv
+      
+# Additional dependencies that might be needed
+pydantic
+requests
+
+flask
+flask_cors
+ipykernel
+matplotlib

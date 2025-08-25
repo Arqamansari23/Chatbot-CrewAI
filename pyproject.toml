@@ -1,0 +1,23 @@
+[project]
+name = "crewai-genetech-faq-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "crewai[all]>=0.152.0",
+    "crewai-tools>=0.0.1",
+    "python-dotenv>=1.1.1",
+    "chromadb>=1.0.15",
+    "langchain-openai>=0.3.28",
+    "pandas>=2.3.1",
+    "openpyxl>=3.1.5",
+    "pydantic>=2.11.7",
+    "requests>=2.32.4",
+    "flask>=3.1.1",
+    "flask-cors>=6.0.1",
+    "ipykernel>=6.30.0",
+    "langchain-community>=0.3.27",
+    "faiss-cpu>=1.11.0.post1",
+    "matplotlib>=3.10.5",
+]

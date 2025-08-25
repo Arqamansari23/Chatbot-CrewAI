@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genetech Solutions Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #c62828; /* Changed to red */
+--primary-dark: #b71c1c; /* Darker red */
+--secondary: #d32f2f; /* Secondary red */
+--accent: #ef5350; /* Lighter red accent */
+--light: #f8f9fa;
+--dark: #212529;
+--gray: #6c757d;
+--success: #4caf50;
+--danger: #f44336;
+--shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+--transition: all 0.3s ease;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+color: var(--dark);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+}
+.chat-container {
+width: 100%;
+max-width: 900px;
+height: 700px;
+background: white;
+border-radius: 20px;
+box-shadow: var(--shadow);
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+.chat-header {
+background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); /* Changed to red gradient */
+color: white;
+padding: 20px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.company-info {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+.company-logo {
+width: 50px;
+height: 50px;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: visible; /* Changed to visible to allow the logo to take its natural shape */
+background-color: transparent; /* Removed background */
+}
+.company-logo img {
+width: 100%;
+height: auto; /* Changed to auto to maintain aspect ratio */
+max-height: 50px; /* Set max height to prevent the logo from being too tall */
+object-fit: contain; /* Ensures the logo maintains aspect ratio */
+filter: drop-shadow(0 0 1px black) drop-shadow(0 0 1px black); /* Adds a subtle black outline around the logo */
+}
+.company-info h1 {
+font-size: 24px;
+font-weight: 600;
+margin-bottom: 5px;
+}
+.company-info p {
+font-size: 14px;
+opacity: 0.9;
+}
+.session-info {
+background: rgba(255, 255, 255, 0.1);
+padding: 8px 12px;
+border-radius: 8px;
+font-size: 12px;
+display: flex;
+align-items: center;
+gap: 5px;
+}
+.session-info i {
+font-size: 14px;
+}
+.chat-messages {
+flex: 1;
+padding: 25px;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+.message {
+max-width: 80%;
+padding: 15px 20px;
+border-radius: 18px;
+position: relative;
+animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.bot-message {
+background: var(--light);
+border-bottom-left-radius: 5px;
+align-self: flex-start;
+}
+.user-message {
+background: var(--primary); /* Changed to red */
+color: white;
+border-bottom-right-radius: 5px;
+align-self: flex-end;
+}
+
+/* Enhanced message content styling */
+.message-content {
+line-height: 1.6;
+}
+
+.message-content h3,
+.message-content h4 {
+color: var(--primary);
+margin: 10px 0 8px 0;
+font-weight: 600;
+}
+
+.message-content h3 {
+font-size: 16px;
+border-bottom: 2px solid var(--primary);
+padding-bottom: 4px;
+margin-bottom: 12px;
+}
+
+.message-content h4 {
+font-size: 14px;
+margin-top: 15px;
+}
+
+.message-content ul {
+margin: 8px 0;
+padding-left: 0;
+list-style: none;
+}
+
+.message-content li {
+margin: 8px 0;
+padding-left: 20px;
+position: relative;
+line-height: 1.5;
+}
+
+.message-content li:before {
+content: "•";
+color: var(--primary);
+font-weight: bold;
+position: absolute;
+left: 0;
+}
+
+.message-content p {
+margin: 8px 0;
+}
+
+.message-content a {
+color: var(--primary);
+text-decoration: none;
+}
+
+.message-content a:hover {
+text-decoration: underline;
+}
+
+.message-content strong {
+font-weight: 600;
+color: var(--dark);
+}
+
+.message-time {
+font-size: 11px;
+opacity: 0.7;
+margin-top: 5px;
+text-align: right;
+}
+.bot-message .message-time {
+text-align: left;
+}
+.typing-indicator {
+display: flex;
+align-items: center;
+gap: 5px;
+padding: 15px 20px;
+background: var(--light);
+border-radius: 18px;
+border-bottom-left-radius: 5px;
+width: fit-content;
+}
+.typing-indicator span {
+height: 8px;
+width: 8px;
+background: var(--gray);
+border-radius: 50%;
+display: inline-block;
+animation: typing 1.4s infinite;
+}
+.typing-indicator span:nth-child(2) {
+animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+animation-delay: 0.4s;
+}
+@keyframes typing {
+0%, 60%, 100% {
+transform: translateY(0);
+}
+30% {
+transform: translateY(-10px);
+}
+}
+.lead-form {
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+border-radius: 16px;
+padding: 25px;
+margin-top: 15px;
+border: 1px solid #e0e0e0;
+display: none;
+animation: slideUp 0.4s ease;
+}
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.lead-form h3 {
+margin-bottom: 15px;
+color: var(--primary); /* Changed to red */
+font-weight: 600;
+}
+.form-group {
+margin-bottom: 15px;
+}
+.form-group label {
+display: block;
+margin-bottom: 8px;
+font-weight: 500;
+color: var(--dark);
+}
+.form-group input {
+width: 100%;
+padding: 12px 15px;
+border: 1px solid #ddd;
+border-radius: 10px;
+font-family: inherit;
+font-size: 14px;
+transition: var(--transition);
+}
+.form-group input:focus {
+border-color: var(--primary); /* Changed to red */
+outline: none;
+box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.2); /* Changed to red with low opacity */
+}
+.form-actions {
+display: flex;
+gap: 10px;
+margin-top: 20px;
+}
+.btn {
+padding: 12px 20px;
+border: none;
+border-radius: 10px;
+font-weight: 600;
+cursor: pointer;
+transition: var(--transition);
+font-size: 14px;
+flex: 1;
+}
+.btn-primary {
+background: var(--primary); /* Changed to red */
+color: white;
+}
+.btn-primary:hover {
+background: var(--primary-dark); /* Darker red */
+}
+.btn-secondary {
+background: #e9ecef;
+color: var(--dark);
+}
+.btn-secondary:hover {
+background: #dee2e6;
+}
+.chat-input {
+padding: 20px;
+background: white;
+border-top: 1px solid #eee;
+display: flex;
+gap: 10px;
+}
+.chat-input input {
+flex: 1;
+padding: 12px 20px;
+border: 1px solid #ddd;
+border-radius: 30px;
+font-size: 15px;
+transition: var(--transition);
+}
+.chat-input input:focus {
+outline: none;
+border-color: var(--primary); /* Changed to red */
+box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.2); /* Changed to red with low opacity */
+}
+.chat-input button {
+width: 50px;
+height: 50px;
+border: none;
+border-radius: 50%;
+background: var(--primary); /* Changed to red */
+color: white;
+cursor: pointer;
+transition: var(--transition);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.chat-input button:hover {
+background: var(--primary-dark); /* Darker red */
+}
+.success-message {
+background: #e8f5e9;
+color: var(--success);
+padding: 15px;
+border-radius: 10px;
+margin-top: 15px;
+display: none;
+animation: fadeIn 0.3s ease;
+}
+.success-message i {
+margin-right: 10px;
+}
+.error-message {
+background: #ffebee;
+color: var(--danger);
+padding: 15px;
+border-radius: 10px;
+margin-top: 15px;
+display: none;
+animation: fadeIn 0.3s ease;
+}
+.error-message i {
+margin-right: 10px;
+}
+.memory-indicator {
+position: absolute;
+top: 20px;
+right: 20px;
+background: rgba(198, 40, 40, 0.1); /* Changed to red with low opacity */
+color: var(--primary); /* Changed to red */
+padding: 5px 10px;
+border-radius: 15px;
+font-size: 12px;
+display: flex;
+align-items: center;
+gap: 5px;
+}
+/* Responsive design */
+@media (max-width: 768px) {
+.chat-container {
+height: 100vh;
+max-width: 100%;
+border-radius: 0;
+}
+
+.message {
+max-width: 90%;
+}
+
+.company-info h1 {
+font-size: 20px;
+}
+
+.session-info {
+display: none;
+}
+}
+</style>
+</head>
+<body>
+<div class="chat-container">
+<div class="chat-header">
+<div class="company-info">
+<div class="company-logo">
+<!-- Using the Genetech Solutions logo -->
+<img src="{{ url_for('static', filename='genetech-logo.png') }}" alt="Genetech Solutions Logo">
+</div>
+<div>
+<h1>Genetech Solutions</h1>
+<p>Software Development & AI Integration</p>
+</div>
+</div>
+<div class="session-info">
+<i class="fas fa-memory"></i>
+<span id="session-id">Session: Loading...</span>
+</div>
+</div>
+<div class="chat-messages" id="chat-messages">
+<div class="message bot-message">
+<div class="message-content">
+<p>Hello! Welcome to Genetech Solutions. We're a leading software development company specializing in custom solutions, mobile apps, web development, and AI integration. How can I help you today?</p>
+</div>
+<div class="message-time">Just now</div>
+</div>
+</div>
+<div class="lead-form" id="lead-form">
+<h3><i class="fas fa-user-plus"></i> Contact Information</h3>
+<div class="form-group">
+<label for="email">Email Address</label>
+<input type="email" id="email" placeholder="your.email@example.com">
+</div>
+<div class="form-actions">
+<button class="btn btn-secondary" id="cancel-lead">Cancel</button>
+<button class="btn btn-primary" id="submit-lead">Submit</button>
+</div>
+<div class="success-message" id="success-message">
+<i class="fas fa-check-circle"></i> Thank you! Our team will connect with you soon to discuss your project in detail.
+</div>
+<div class="error-message" id="error-message">
+<i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
+</div>
+</div>
+<div class="chat-input">
+<input type="text" id="user-input" placeholder="Type your message...">
+<button id="send-btn">
+<i class="fas fa-paper-plane"></i>
+</button>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const chatMessages = document.getElementById('chat-messages');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const leadForm = document.getElementById('lead-form');
+const emailInput = document.getElementById('email');
+const submitLeadBtn = document.getElementById('submit-lead');
+const cancelLeadBtn = document.getElementById('cancel-lead');
+const successMessage = document.getElementById('success-message');
+const errorMessage = document.getElementById('error-message');
+const errorText = document.getElementById('error-text');
+const sessionIdElement = document.getElementById('session-id');
+
+// Get session ID from server
+async function getSessionId() {
+try {
+const response = await fetch('/chat', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ message: '_init_session_' }),
+});
+
+if (response.ok) {
+// Extract session ID from cookies
+const cookies = document.cookie.split(';');
+for (const cookie of cookies) {
+const [name, value] = cookie.trim().split('=');
+if (name === 'session') {
+// Format session ID for display
+const sessionId = value.substring(0, 8);
+sessionIdElement.textContent = `Session: ${sessionId}...`;
+break;
+}
+}
+}
+} catch (error) {
+console.error('Error getting session ID:', error);
+sessionIdElement.textContent = 'Session: Unknown';
+}
+}
+
+// Initialize session
+getSessionId();
+
+// Function to format text for proper display
+function formatMessageContent(text) {
+// Convert markdown-style formatting to HTML
+let formattedText = text
+// Convert **text** to <strong>text</strong>
+.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+// Convert bullet points (- or •) to proper list items
+.replace(/^[-•]\s*(.*?)$/gm, '<li>$1</li>')
+// Convert [text](url) markdown links to HTML links first (before standalone URLs)
+.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+// Convert standalone URLs to clickable links (but avoid double-converting already processed links)
+.replace(/(?<!href=")(?<!">)(https?:\/\/[^\s\]<]+)(?![^<]*<\/a>)/g, '<a href="$1" target="_blank">$1</a>');
+
+// Process headings and structure
+const lines = formattedText.split('\n');
+let processedLines = [];
+let inList = false;
+
+for (let i = 0; i < lines.length; i++) {
+const line = lines[i].trim();
+
+if (line === '') {
+if (inList) {
+processedLines.push('</ul>');
+inList = false;
+}
+processedLines.push('<br>');
+continue;
+}
+
+// Check if line contains <li> (bullet point)
+if (line.includes('<li>')) {
+if (!inList) {
+processedLines.push('<ul>');
+inList = true;
+}
+processedLines.push(line);
+} else {
+// Close list if we were in one
+if (inList) {
+processedLines.push('</ul>');
+inList = false;
+}
+
+// Check for headings (lines ending with colon and containing "Information" or all caps)
+if (line.endsWith(':') && (line.includes('Information') || line.includes('Contact') || /^[A-Z\s:]+$/.test(line))) {
+processedLines.push(`<h3>${line}</h3>`);
+} else if (line.endsWith(':') && line.length < 50) {
+processedLines.push(`<h4>${line}</h4>`);
+} else {
+processedLines.push(`<p>${line}</p>`);
+}
+}
+}
+
+// Close any remaining list
+if (inList) {
+processedLines.push('</ul>');
+}
+
+return processedLines.join('\n');
+}
+
+// Function to add a message to the chat
+function addMessage(text, isUser = false) {
+const messageDiv = document.createElement('div');
+messageDiv.classList.add('message', isUser ? 'user-message' : 'bot-message');
+
+const messageContent = document.createElement('div');
+messageContent.classList.add('message-content');
+
+if (isUser) {
+// User messages remain as plain text
+messageContent.textContent = text;
+} else {
+// Bot messages get formatted
+messageContent.innerHTML = formatMessageContent(text);
+}
+
+messageDiv.appendChild(messageContent);
+
+const messageTime = document.createElement('div');
+messageTime.classList.add('message-time');
+const now = new Date();
+messageTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+messageDiv.appendChild(messageTime);
+
+chatMessages.appendChild(messageDiv);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Function to show typing indicator
+function showTypingIndicator() {
+const typingDiv = document.createElement('div');
+typingDiv.classList.add('typing-indicator');
+typingDiv.id = 'typing-indicator';
+
+for (let i = 0; i < 3; i++) {
+const span = document.createElement('span');
+typingDiv.appendChild(span);
+}
+
+chatMessages.appendChild(typingDiv);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Function to remove typing indicator
+function removeTypingIndicator() {
+const typingIndicator = document.getElementById('typing-indicator');
+if (typingIndicator) {
+typingIndicator.remove();
+}
+}
+
+// Function to send a message to the backend
+async function sendMessage() {
+const message = userInput.value.trim();
+if (message === '') return;
+
+// Add user message to chat
+addMessage(message, true);
+userInput.value = '';
+
+// Show typing indicator
+showTypingIndicator();
+
+try {
+// Send message to backend
+const response = await fetch('/chat', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ message: message }),
+});
+
+const data = await response.json();
+
+// Remove typing indicator
+removeTypingIndicator();
+
+if (response.ok) {
+// Add bot response to chat
+addMessage(data.response);
+
+// Show lead form if needed
+if (data.collect_lead) {
+leadForm.style.display = 'block';
+}
+} else {
+// Show error message
+addMessage("I'm sorry, I encountered an error while processing your request. Please try again later.");
+console.error('Error:', data.error);
+}
+} catch (error) {
+// Remove typing indicator
+removeTypingIndicator();
+
+// Show error message
+addMessage("I'm sorry, I'm having trouble connecting to the server. Please check your internet connection and try again.");
+console.error('Error:', error);
+}
+}
+
+// Function to submit lead information
+async function submitLead() {
+const email = emailInput.value.trim();
+
+if (email === '') {
+errorText.textContent = 'Please enter your email address.';
+errorMessage.style.display = 'block';
+return;
+}
+
+try {
+// Send lead data to backend
+const response = await fetch('/save_lead', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({ email: email }),
+});
+
+const data = await response.json();
+
+if (response.ok && data.success) {
+// Show success message
+successMessage.style.display = 'block';
+errorMessage.style.display = 'none';
+
+// Reset form
+emailInput.value = '';
+
+// Hide form after a delay
+setTimeout(() => {
+leadForm.style.display = 'none';
+successMessage.style.display = 'none';
+}, 3000);
+} else {
+// Show error message
+errorText.textContent = data.message || 'Failed to save your information. Please try again.';
+errorMessage.style.display = 'block';
+successMessage.style.display = 'none';
+}
+} catch (error) {
+// Show error message
+errorText.textContent = 'Failed to save your information. Please check your internet connection and try again.';
+errorMessage.style.display = 'block';
+successMessage.style.display = 'none';
+console.error('Error:', error);
+}
+}
+
+// Event listeners
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', (e) => {
+if (e.key === 'Enter') sendMessage();
+});
+submitLeadBtn.addEventListener('click', submitLead);
+cancelLeadBtn.addEventListener('click', () => {
+leadForm.style.display = 'none';
+emailInput.value = '';
+errorMessage.style.display = 'none';
+});
+});
+</script>
+</body>
+</html>
