@@ -113,7 +113,7 @@ initialize_database()
 
 # ============ LLM SETUP ============
 llm = ChatOpenAI(
-    model="gpt-4o",
+    model="gpt-4o-mini",
     temperature=0.1,
     max_tokens=500
 )
